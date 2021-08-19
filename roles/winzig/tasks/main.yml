@@ -1,18 +1,5 @@
 ---
 
-- name: Add Node.js to repositories
-  shell: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-
-- name: Install dependencies
-  apt:
-    name:
-      - nodejs
-      - mysql-server
-    update_cache: yes
-  become: yes
-  environment:
-    DEBIAN_FRONTEND: noninteractive
-
 - name: Checkout Winzig code
   git:
     repo: https://github.com/wobgob/winzig.git

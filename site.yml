@@ -2,10 +2,6 @@
 
 - name: Common configuration
   hosts: mikxi
-  vars:
-    sudoers:
-      - azerothcore
-      - winzig
   user: deploy
   become: yes
   gather_facts: yes
@@ -29,7 +25,6 @@
   vars:
     mysql_pass: "{{ lookup('env', 'MYSQL_PASS') }}"
   user: azerothcore
-  become: yes
   gather_facts: yes
   roles:
     - azerothcore
@@ -43,7 +38,6 @@
     discord_guild_id: "{{ lookup('env', 'DISCORD_GUILD_ID') }}"
     mysql_pass: "{{ lookup('env', 'MYSQL_PASS') }}"
   user: winzig
-  become: yes
   gather_facts: yes
   roles:
     - winzig

@@ -60,7 +60,6 @@ On the remote server:
 ```
 cd /home/azerothcore
 git clone https://github.com/azerothcore/azerothcore-wotlk.git
-azerothcore-wotlk/acore.sh install-deps
 azerothcore-wotlk/acore.sh compiler all
 ```
 

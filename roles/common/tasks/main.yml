@@ -63,30 +63,44 @@
     state: present
     key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
 
-- name: Make sure we have a wheel group
-  group:
-    name: wheel
-    state: present
+- name: Install AzerothCore dependencies
+  apt:
+    name:
+      - git
+      - cmake
+      - make
+      - gcc
+      - g++
+      - clang
+      - libmysqlclient-dev
+      - libssl-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libncurses-dev
+      - mysql-server
+      - libace-6.*
+      - libboost-all-dev
+      - libace-dev
+    update_cache: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
-- name: Allow wheel group to have passwordless sudo
-  lineinfile:
-    dest: /etc/sudoers
-    state: present
-    regexp: '^%wheel'
-    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
-    validate: visudo -cf %s
+- name: Add Node.js to repositories
+  shell: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 
-- name: Add sudoers users to wheel group
-  user:
-    name: "{{ item }}"
-    groups: wheel
-    append: yes
-  with_items: "{{ sudoers }}"
+- name: Install Node.js
+  apt:
+    name: nodejs
+    state: present
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Install tmux
   apt:
     name: tmux
     state: present
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Copy tmux config
   copy:
