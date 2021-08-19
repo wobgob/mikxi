@@ -1,0 +1,21 @@
+export DISCORD_BOT_TOKEN="{{ discord_bot_token }}"
+export DISCORD_CLIENT_ID={{ discord_client_id }}
+export DISCORD_GUILD_ID={{ discord_guild_id }}
+export DISCORD_BOT_DB="mysql://acore:{{ mysql_pass }}@localhost:3306/acore_auth"
+
+winzig="/usr/bin/node /home/winzig/winzig/index.js"
+
+winzig_session="winzig-session"
+
+if tmux new-session -d -s $winzig_session; then
+    echo "Created authserver session: $winzig_session"
+else
+    echo "Error when trying to create authserver session: $winzig_session"
+fi
+
+if tmux send-keys -t $winzig_session "$winzig" C-m; then
+    echo "Executed \"$winzig\" inside $winzig_session"
+    echo "You can attach to $winzig_session and check the result using \"tmux attach -t $winzig_session\""
+else
+    echo "Error when executing \"$winzig\" inside $winzig_session"
+fi

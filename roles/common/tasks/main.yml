@@ -1,0 +1,99 @@
+---
+
+- name: Automatically install security updates
+  debconf: name=unattended-upgrades question=unattended-upgrades/enable_auto_updates vtype=boolean value='true'
+
+- name: Install unattended-upgrades
+  apt: name=unattended-upgrades
+
+- name: Enable unattended-upgrades
+  command:
+    cmd: dpkg-reconfigure -f noninteractive unattended-upgrades
+    creates: /etc/apt/apt.conf.d/20auto-upgrades
+
+- name: Install ufw
+  apt: pkg=ufw state=present
+
+- name: Deny everything
+  ufw: policy=deny
+
+- name: Set firewall rule for DNS
+  ufw: rule=allow port=domain
+
+- name: Set firewall rules for web traffic and SSH
+  ufw: rule=allow port={{ item }} proto=tcp
+  with_items:
+    - http
+    - https
+    - ssh
+
+- name: Set firewall rules for AzerothCore
+  ufw: rule=allow port={{ item }}
+  with_items:
+    - 3306
+    - 3724
+    - 8085
+
+- name: Enable UFW
+  ufw: state=enabled
+
+- name: Create user azerothcore
+  user:
+    name: azerothcore
+    shell: /bin/bash
+    system: yes
+    state: present
+
+- name: Set authorized key for user azerothcore copying it from the current user
+  authorized_key:
+    user: azerothcore
+    state: present
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+
+- name: Create user winzig
+  user:
+    name: winzig
+    shell: /bin/bash
+    system: yes
+    state: present
+
+- name: Set authorized key for user winzig copying it from the current user
+  authorized_key:
+    user: winzig
+    state: present
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+
+- name: Make sure we have a wheel group
+  group:
+    name: wheel
+    state: present
+
+- name: Allow wheel group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s
+
+- name: Add sudoers users to wheel group
+  user:
+    name: "{{ item }}"
+    groups: wheel
+    append: yes
+  with_items: "{{ sudoers }}"
+
+- name: Install tmux
+  apt:
+    name: tmux
+    state: present
+
+- name: Copy tmux config
+  copy:
+    src: tmux.conf
+    dest: "/home/{{ item }}/.tmux.conf"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+  with_items:
+    - azerothcore
+    - winzig

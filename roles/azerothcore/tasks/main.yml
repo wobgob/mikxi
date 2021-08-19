@@ -1,0 +1,36 @@
+---
+
+- name: Copy startup.sh
+  copy:
+    src: startup.sh
+    dest: /home/azerothcore/startup.sh
+    owner: azerothcore
+    group: azerothcore
+
+- name: Create server log folder
+  file:
+    path: /home/azerothcore/azerothcore-wotlk/env/dist/log
+    state: directory
+    owner: azerothcore
+    group: azerothcore
+
+- name: Copy worldserver.conf
+  template:
+    src: worldserver.conf.j2
+    dest: /home/azerothcore/azerothcore-wotlk/env/dist/etc/worldserver.conf
+    owner: azerothcore
+    group: azerothcore
+
+- name: Copy authserver.conf
+  template:
+    src: authserver.conf.j2
+    dest: /home/azerothcore/azerothcore-wotlk/env/dist/etc/authserver.conf
+    owner: azerothcore
+    group: azerothcore
+
+- name: Copy AutoBalance.conf
+  copy:
+    src: AutoBalance.conf
+    dest: /home/azerothcore/azerothcore-wotlk/env/dist/etc/modules/AutoBalance.conf
+    owner: azerothcore
+    group: azerothcore
