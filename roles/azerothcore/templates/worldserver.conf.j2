@@ -1,8 +1,28 @@
 [worldserver]
+
+# CONNECTIONS AND DIRECTORIES
 LogsDir = "../log"
 LoginDatabaseInfo = "127.0.0.1;3306;acore;{{ mysql_pass }};acore_auth"
 WorldDatabaseInfo = "127.0.0.1;3306;acore;{{ mysql_pass }};acore_world"
 CharacterDatabaseInfo = "127.0.0.1;3306;acore;{{ mysql_pass }};acore_characters"
+
+# SERVER SETTINGS
 MaxPlayerLevel = 19
 MaxPrimaryTradeSkill = 11
 Motd = "Welcome to the Wobbling Goblin!"
+
+# PLAYER INTERACTION
+AllowTwoSide.Interaction.Calendar = 1
+AllowTwoSide.Interaction.Chat = 1
+AllowTwoSide.Interaction.Emote = 1
+AllowTwoSide.Interaction.Channel = 1
+AllowTwoSide.Interaction.Group = 1
+AllowTwoSide.Interaction.Guild = 1
+AllowTwoSide.Interaction.Auction = 1
+AllowTwoSide.Interaction.Mail = 1
+AllowTwoSide.WhoList = 1
+AllowTwoSide.AddFriend = 1
+AllowTwoSide.Trade = 1
+
+# BATTLEGROUND CONFIG
+Battleground.QueueAnnouncer.Enable = 0
