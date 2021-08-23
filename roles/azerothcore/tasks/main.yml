@@ -28,9 +28,9 @@
     owner: azerothcore
     group: azerothcore
 
-- name: Copy AutoBalance.conf
+- name: Copy PlayerSettings.conf
   copy:
-    src: AutoBalance.conf
-    dest: /home/azerothcore/azerothcore-wotlk/env/dist/etc/modules/AutoBalance.conf
+    src: PlayerSettings.conf
+    dest: /home/azerothcore/azerothcore-wotlk/env/dist/etc/modules/PlayerSettings.conf
     owner: azerothcore
     group: azerothcore

@@ -81,6 +81,10 @@
       - libace-6.*
       - libboost-all-dev
       - libace-dev
+      - python3
+      - python3-pip
+      - zip
+      - mysql-client
     update_cache: yes
   environment:
     DEBIAN_FRONTEND: noninteractive
@@ -111,3 +115,9 @@
   with_items:
     - azerothcore
     - winzig
+
+- name: Install pyrogram and tgcrypto
+  pip:
+    name:
+      - pyrogram
+      - tgcrypto
