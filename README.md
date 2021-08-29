@@ -47,7 +47,30 @@ Your Ansible hosts file should look something like:
     dev ansible_host=127.0.0.1 ansible_python_interpreter=/usr/bin/python3
 ```
 
-Set your realm names in `host_vars/prod.yml` and `host_vars/dev.yml`.
+Configure `prod`, `test`, and `dev` in `host_vars/prod.yml`, `host_vars/test.yml`, and `host_vars/dev.yml` respectively:
+
+```
+host_vars/*.yml:
+    realmlist:
+      name: <name>
+
+    discord_bot_token: <discord-bot-token>
+    discord_client_id: <discord-client-id>
+    discord_guild_id: <discord-guild-id>
+    db_uri: mysql://<user>:<pass>@<host>:<port>
+    smtp_host: <smtp-host>
+    smtp_user: <smtp-user>
+    smtp_pass: <smtp-pass>
+```
+
+Configure `all` hosts in `group_vars/all.yml`:
+
+```
+group_vars/all.yml:
+    company: <name>
+    website: <url>
+    noreply: <email>
+```
 
 Run the `common` role:
 ```

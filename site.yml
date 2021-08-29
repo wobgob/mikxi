@@ -32,11 +32,6 @@
 
 - name: Winzig configuration
   hosts: mikxi
-  vars:
-    discord_bot_token: "{{ lookup('env', 'DISCORD_BOT_TOKEN') }}"
-    discord_client_id: "{{ lookup('env', 'DISCORD_CLIENT_ID') }}"
-    discord_guild_id: "{{ lookup('env', 'DISCORD_GUILD_ID') }}"
-    mysql_pass: "{{ lookup('env', 'MYSQL_PASS') }}"
   user: winzig
   gather_facts: yes
   roles:
