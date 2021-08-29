@@ -1,10 +1,12 @@
 [worldserver]
 
 # CONNECTIONS AND DIRECTORIES
+RealmID = {{ realm.id }}
 LogsDir = "../log"
-LoginDatabaseInfo = "127.0.0.1;3306;acore;{{ mysql_pass }};acore_auth"
-WorldDatabaseInfo = "127.0.0.1;3306;acore;{{ mysql_pass }};acore_world"
-CharacterDatabaseInfo = "127.0.0.1;3306;acore;{{ mysql_pass }};acore_characters"
+LoginDatabaseInfo = "127.0.0.1;3306;acore;{{ database.pass }};acore_auth"
+WorldDatabaseInfo = "127.0.0.1;3306;acore;{{ database.pass }};{{ realm.world_db }}"
+CharacterDatabaseInfo = "127.0.0.1;3306;acore;{{ database.pass }};{{ realm.char_db }}"
+WorldServerPort = {{ realm.port }}
 
 # SERVER SETTINGS
 MaxPlayerLevel = 19

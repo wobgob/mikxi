@@ -24,14 +24,14 @@
   hosts: mikxi
   vars:
     mysql_pass: "{{ lookup('env', 'MYSQL_PASS') }}"
-  user: azerothcore
+  user: "{{ inventory_hostname }}"
   gather_facts: yes
   roles:
     - azerothcore
   tags: ['azerothcore']
 
 - name: Winzig configuration
-  hosts: mikxi
+  hosts: winzig
   user: winzig
   gather_facts: yes
   roles:

@@ -12,7 +12,7 @@
 - name: Create database user
   mysql_user:
     name: acore
-    password: "{{ mysql_pass }}"
+    password: "{{ database.pass }}"
     priv: '*.*:ALL,GRANT'
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
@@ -20,8 +20,8 @@
 - name: Create databases
   mysql_db:
     name:
-      - acore_world
-      - acore_characters
+      - "{{ realm.world_db }}"
+      - "{{ realm.char_db }}"
       - acore_auth
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
@@ -29,7 +29,7 @@
 - name: Grant all privileges to the databases
   mysql_user:
     name: acore
-    password: "{{ mysql_pass }}"
+    password: "{{ database.pass }}"
     state: present
     priv:
       'acore_world.*': 'ALL,GRANT'
@@ -37,8 +37,10 @@
       'acore_auth.*': 'ALL,GRANT'
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
-- name: Update the realmlist
+- name: Add realm to realmlist
   community.mysql.mysql_query:
+    login_user: acore
+    login_password: "{{ database.pass }}"
     login_db: acore_auth
-    query: UPDATE realmlist SET name = "{{ realmlist.name }}", address = "{{ ansible_default_ipv4.address }}" WHERE id = 1
+    query: "INSERT INTO realmlist (id, name, address, port) VALUES ({{ realm.id }}, '{{ realm.name }}', '{{ ansible_host }}', {{ realm.port }})"
     login_unix_socket: /var/run/mysqld/mysqld.sock

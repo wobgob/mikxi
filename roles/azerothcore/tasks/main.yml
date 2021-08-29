@@ -1,36 +1,43 @@
 ---
 
 - name: Copy startup.sh
-  copy:
-    src: startup.sh
-    dest: /home/azerothcore/startup.sh
-    owner: azerothcore
-    group: azerothcore
+  template:
+    src: startup.sh.j2
+    dest: "/home/{{ inventory_hostname }}/startup.sh"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
+
+- name: Copy worldserver.sh
+  template:
+    src: worldserver.sh.j2
+    dest: "/home/{{ inventory_hostname }}/worldserver.sh"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
 
 - name: Create server log folder
   file:
-    path: /home/azerothcore/azerothcore-wotlk/env/dist/log
+    path: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/log"
     state: directory
-    owner: azerothcore
-    group: azerothcore
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
 
 - name: Copy worldserver.conf
   template:
     src: worldserver.conf.j2
-    dest: /home/azerothcore/azerothcore-wotlk/env/dist/etc/worldserver.conf
-    owner: azerothcore
-    group: azerothcore
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/worldserver.conf"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
 
 - name: Copy authserver.conf
   template:
     src: authserver.conf.j2
-    dest: /home/azerothcore/azerothcore-wotlk/env/dist/etc/authserver.conf
-    owner: azerothcore
-    group: azerothcore
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/authserver.conf"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
 
 - name: Copy PlayerSettings.conf
   copy:
     src: PlayerSettings.conf
-    dest: /home/azerothcore/azerothcore-wotlk/env/dist/etc/modules/PlayerSettings.conf
-    owner: azerothcore
-    group: azerothcore
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/modules/PlayerSettings.conf"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"

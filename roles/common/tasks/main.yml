@@ -32,21 +32,21 @@
   with_items:
     - 3306
     - 3724
-    - 8085
+    - "{{ realm.port }}"
 
 - name: Enable UFW
   ufw: state=enabled
 
-- name: Create user azerothcore
+- name: Create user for AzerothCore
   user:
-    name: azerothcore
+    name: "{{ inventory_hostname }}"
     shell: /bin/bash
     system: yes
     state: present
 
-- name: Set authorized key for user azerothcore copying it from the current user
+- name: Set authorized key for user for AzerothCore copying it from the current user
   authorized_key:
-    user: azerothcore
+    user: "{{ inventory_hostname }}"
     state: present
     key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
 
@@ -113,7 +113,7 @@
     owner: "{{ item }}"
     group: "{{ item }}"
   with_items:
-    - azerothcore
+    - "{{ inventory_hostname }}"
     - winzig
 
 - name: Install pyrogram and tgcrypto

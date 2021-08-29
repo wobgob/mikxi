@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-authserver="/home/azerothcore/azerothcore-wotlk/acore.sh run-authserver"
-worldserver="/home/azerothcore/azerothcore-wotlk/acore.sh run-worldserver"
+authserver="/home/{{ inventory_hostname }}/azerothcore-wotlk/acore.sh run-authserver"
+worldserver="/home/{{ inventory_hostname }}/azerothcore-wotlk/acore.sh run-worldserver"
 
 authserver_session="auth-session"
 worldserver_session="world-session"
