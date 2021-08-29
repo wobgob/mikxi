@@ -42,10 +42,12 @@ Your Ansible hosts file should look something like:
 ```
 /etc/ansible/hosts:
     [mikxi]
-    salon-trilogy.bnr.la ansible_python_interpreter=/usr/bin/python3
+    prod ansible_host=123.456.789 ansible_python_interpreter=/usr/bin/python3
+    test ansible_host=987.654.321 ansible_python_interpreter=/usr/bin/python3
+    dev ansible_host=127.0.0.1 ansible_python_interpreter=/usr/bin/python3
 ```
 
-Set your realm name in `group_vars/all.yml`.
+Set your realm names in `host_vars/prod.yml` and `host_vars/dev.yml`.
 
 Run the `common` role:
 ```

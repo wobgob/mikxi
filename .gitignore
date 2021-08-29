@@ -1,6 +1,5 @@
-hosts
-azerothcore-wotlk
-acore-*
+host_vars/*
+!host_vars/.gitkeep
 
 # Created by https://www.toptal.com/developers/gitignore/api/ansible
 # Edit at https://www.toptal.com/developers/gitignore?templates=ansible
