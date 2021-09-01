@@ -2,4 +2,7 @@
 
 # AUTH SERVER SETTINGS
 LogsDir = "../log"
-LoginDatabaseInfo = "127.0.0.1;3306;acore;{{ database.pass }};acore_auth"
+LoginDatabaseInfo = "{{ mysql.host }};{{ mysql.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.auth }}"
+
+# UPDATE SETTINGS
+Updates.EnableDatabases = 0

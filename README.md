@@ -45,7 +45,12 @@ Your Ansible hosts file should look something like:
     test ansible_host=987.654.321 ansible_python_interpreter=/usr/bin/python3
     dev ansible_host=127.0.0.1 ansible_python_interpreter=/usr/bin/python3
 
-    [mikxi]
+    [common]
+    prod
+    test
+    dev
+
+    [acore]
     prod
     test
     dev
@@ -55,99 +60,89 @@ Your Ansible hosts file should look something like:
     dev
 ```
 
-Configure `prod`, `test`, and `dev` in `host_vars/prod.yml`, `host_vars/test.yml`, and `host_vars/dev.yml` respectively:
-
-```
-host_vars/*.yml:
-    realmlist:
-      id: <int>
-      port: <int>
-      name: <name>
-
-    discord:
-      bot_token: <discord-bot-token>
-      client_id: <discord-client-id>
-      guild_id: <discord-guild-id>
-    
-    database:
-      pass: <password>
-      uri: mysql://<user>:<pass>@<host>:<port>
-    
-    smtp:
-      host: <smtp-host>
-      user: <smtp-user>
-      pass: <smtp-pass>
-```
-
-Configure `all` hosts in `group_vars/all.yml`:
+Configure the server:
 
 ```
 group_vars/all.yml:
-    company: <name>
-    website: <url>
-    noreply: <email>
+    company: <company>
+    website: <website>
+    email: <company> <email>
+
+    acore:
+      git: <repo>
+      version: <branch>
+      modules:
+        - name: <name>
+          git: <repo>
+          version: <branch>
+        - name: <name>
+          git: <repo>
+          version: <branch>
+
+    realmlist:
+      id: <id>
+      name: <name>
+      address: <address>
+      port: <port>
+
+    mysql:
+      user: <user>
+      pass: <password>
+      host: <host>
+      port: <port>
+      uri: mysql://<user>:<password>@<host>:<port>
+
+    database:
+      auth: <auth>
+      characters: <characters>
+      world: <world>
+
+    discord:
+      bot_token: <token>
+      client_id: <id>
+      guild_id: <id>
+
+    smtp:
+      host: <host>
+      user: <user>
+      pass: <password>
 ```
+
+You can overwrite variables on a host-by-host basis in `host_vars/<host>.yml` (e.g., `host_vars/dev.yml`).
 
 Run the `common` role:
 
 ```
-ansible-playbook --tags "common" site.yml
-```
-
-To limit it to a certain host:
-
-```
-ansible-playbook --tags "common" --limit dev site.yml
+ansible-playbook --tags common --limit <host> site.yml
 ```
 
 ## Building
 *The following is only required when setting up the server.*
 
-On the remote server:
-
-```
-cd /home/{dev,test,prod}
-git clone https://github.com/azerothcore/azerothcore-wotlk.git
-azerothcore-wotlk/acore.sh compiler all
-```
-
-Remember to clone any modules you might require.
-
 On your local machine:
 
 ```
 ansible-galaxy collection install community.mysql
-ansible-playbook --tags "database" site.yml
+ansible-playbook --tags "acore,install,winzig" --limit <host> site.yml
 ```
 
-On the remote server again:
-
-```
-DBLIST=<auth-db>,<char-db>,<world-db> MYSQL_PASS=<password> ./acore.sh db-assembler import-all
-DATAPATH_ZIP=$HOME/data.zip ./acore.sh client-data
-```
-
-On your local machine again:
-
-```
-ansible-playbook --tags "azerothcore" site.yml
-ansible-playbook --tags "winzig" site.yml
-```
-
-You should now find startup scripts in `/home/{dev,test,prod}` and `/home/winzig`. Run these scripts as either `dev`, `test`, `prod`, or `winzig`.
-
-## Updating
 On the remote server:
 
 ```
-cd /home/{dev,test,prod}/azerothcore-wotlk
-./acore.sh compiler build
-DBLIST=<auth-db>,<char-db>,<world-db> MYSQL_PASS=<password> ./acore.sh db-assembler import-updates
+~/azerothcore-wotlk/acore.sh compiler all
 ```
 
+You should now find `/home/<host>/startup.sh` and `/home/winzig/startup.sh` which run on boot.
+
+## Updating
 On your local machine:
 
 ```
-ansible-playbook --tags "azerothcore" site.yml
-ansible-playbook --tags "winzig" site.yml
+ansible-playbook --tags "acore,update,winzig" site.yml
+```
+
+On the remote server:
+
+```
+/home/<host>/azerothcore-wotlk/acore.sh compiler build
 ```

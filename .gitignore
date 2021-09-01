@@ -2,6 +2,8 @@ host_vars/*
 !host_vars/.gitkeep
 group_vars/*
 !group_vars/.gitkeep
+roles/azerothcore/files/modules/*
+!roles/azerothcore/files/modules/.gitkeep
 
 # Created by https://www.toptal.com/developers/gitignore/api/ansible
 # Edit at https://www.toptal.com/developers/gitignore?templates=ansible

@@ -19,6 +19,8 @@
 
 - name: Set firewall rule for DNS
   ufw: rule=allow port=domain
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Set firewall rules for web traffic and SSH
   ufw: rule=allow port={{ item }} proto=tcp
@@ -32,7 +34,7 @@
   with_items:
     - 3306
     - 3724
-    - "{{ realm.port }}"
+    - "{{ realmlist.port }}"
 
 - name: Enable UFW
   ufw: state=enabled
@@ -78,13 +80,8 @@
       - libreadline-dev
       - libncurses-dev
       - mysql-server
-      - libace-6.*
       - libboost-all-dev
-      - libace-dev
-      - python3
-      - python3-pip
-      - zip
-      - mysql-client
+      - unzip
     update_cache: yes
   environment:
     DEBIAN_FRONTEND: noninteractive
@@ -92,19 +89,22 @@
 - name: Add Node.js to repositories
   shell: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 
-- name: Install Node.js
+- name: Install Node.js, Python, and tmux
   apt:
-    name: nodejs
-    state: present
+    name:
+      - nodejs
+      - python3
+      - python3-pip
+      - tmux
   environment:
     DEBIAN_FRONTEND: noninteractive
 
-- name: Install tmux
-  apt:
-    name: tmux
-    state: present
-  environment:
-    DEBIAN_FRONTEND: noninteractive
+- name: Install pyrogram, tgcrypto, and pymysql
+  pip:
+    name:
+      - pyrogram
+      - tgcrypto
+      - pymysql
 
 - name: Copy tmux config
   copy:
@@ -116,8 +116,23 @@
     - "{{ inventory_hostname }}"
     - winzig
 
-- name: Install pyrogram and tgcrypto
-  pip:
+- name: Create databases
+  mysql_db:
     name:
-      - pyrogram
-      - tgcrypto
+      - "{{ database.world }}"
+      - "{{ database.characters }}"
+      - "{{ database.auth }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create user
+  mysql_user:
+    name: "{{ mysql.user }}"
+    password: "{{ mysql.pass }}"
+    host: "{{ item }}"
+    priv: '*.*:ALL,GRANT'
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  with_items:
+    - localhost
+    - 127.0.0.1

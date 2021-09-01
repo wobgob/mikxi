@@ -1,16 +1,16 @@
 ---
 
-- name: Copy startup.sh
-  template:
-    src: startup.sh.j2
-    dest: "/home/{{ inventory_hostname }}/startup.sh"
-    owner: "{{ inventory_hostname }}"
-    group: "{{ inventory_hostname }}"
+- name: Checkout AzerothCore source
+  git:
+    repo: "{{ acore.git }}"
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk"
+    version: "{{ acore.version }}"
 
-- name: Copy worldserver.sh
-  template:
-    src: worldserver.sh.j2
-    dest: "/home/{{ inventory_hostname }}/worldserver.sh"
+- name: Copy config.sh
+  copy:
+    src: "/home/{{ inventory_hostname }}/azerothcore-wotlk/conf/dist/config.sh"
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/conf/config.sh"
+    remote_src: yes
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
 
@@ -21,23 +21,84 @@
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
 
-- name: Copy worldserver.conf
+- name: Copy startup scripts
   template:
-    src: worldserver.conf.j2
-    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/worldserver.conf"
+    src: "{{ item }}.j2"
+    dest: "/home/{{ inventory_hostname }}/{{ item }}"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
+  with_items:
+    - startup.sh
+    - worldserver.sh
+
+- name: Create configuration directory
+  file:
+    path: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc"
+    state: directory
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
 
-- name: Copy authserver.conf
+- name: Copy configuration
   template:
-    src: authserver.conf.j2
-    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/authserver.conf"
+    src: "{{ item }}.j2"
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/{{ item }}"
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
+  with_items:
+    - worldserver.conf
+    - authserver.conf
 
-- name: Copy PlayerSettings.conf
+- name: Checkout AzerothCore modules
+  git:
+    repo: "{{ item.git }}"
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/modules/{{ item.name }}"
+    version: "{{ item.version }}"
+  with_items: "{{ acore.modules }}"
+
+- name: Copy module configuration
   copy:
-    src: PlayerSettings.conf
-    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/modules/PlayerSettings.conf"
+    src: modules
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/modules"
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
+
+- name: Import all
+  shell: "bash /home/{{ inventory_hostname }}/azerothcore-wotlk/apps/db_assembler/db_assembler.sh import-all"
+  environment:
+    MYSQL_USER: "{{ mysql.user }}"
+    MYSQL_PASS: "{{ mysql.pass }}"
+    MYSQL_HOST: "{{ mysql.host }}"
+    MYSQL_PORT: "{{ mysql.port }}"
+    DB_AUTH_NAME: "{{ database.auth }}"
+    DB_CHARACTERS_NAME: "{{ database.characters }}"
+    DB_WORLD_NAME: "{{ database.world }}"
+
+- name: Add to realmlist
+  community.mysql.mysql_query:
+    login_user: "{{ mysql.user }}"
+    login_password: "{{ mysql.pass }}"
+    login_db: "{{ database.auth }}"
+    query: >-
+      INSERT INTO realmlist (id, name, address, port) VALUES ({{ realmlist.id }}, '{{ realmlist.name }}', '{{ realmlist.address }}', {{ realmlist.port }})
+      ON DUPLICATE KEY UPDATE name = '{{ realmlist.name }}', address = '{{ realmlist.address }}', port = {{ realmlist.port }}
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create binary directory
+  file:
+    path: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin"
+    state: directory
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
+
+- name: Get client data
+  get_url:
+    url: "{{ acore.data }}"
+    dest: "/home/{{ inventory_hostname }}/data.zip"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
+
+- name: Extract client data
+  unarchive:
+    src: "/home/{{ inventory_hostname }}/data.zip"
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin"
+    remote_src: yes

@@ -1,39 +1,21 @@
 ---
 
-- name: Common configuration
-  hosts: mikxi
+- name: Common
+  hosts: common
   user: deploy
   become: yes
-  gather_facts: yes
   roles:
     - common
   tags: ['common']
 
-- name: Database configuration
-  hosts: mikxi
-  vars:
-    mysql_pass: "{{ lookup('env', 'MYSQL_PASS') }}"
-  user: deploy
-  become: yes
-  gather_facts: yes
-  roles:
-    - database
-  tags: ['database']
-
-- name: AzerothCore configuration
-  hosts: mikxi
-  vars:
-    mysql_pass: "{{ lookup('env', 'MYSQL_PASS') }}"
+- name: AzerothCore
+  hosts: acore
   user: "{{ inventory_hostname }}"
-  gather_facts: yes
-  roles:
-    - azerothcore
-  tags: ['azerothcore']
+  roles: ['azerothcore']
+  tags: ['acore']
 
-- name: Winzig configuration
+- name: Winzig
   hosts: winzig
   user: winzig
-  gather_facts: yes
-  roles:
-    - winzig
+  roles: ['winzig']
   tags: ['winzig']

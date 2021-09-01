@@ -21,3 +21,9 @@
     owner: winzig
     group: winzig
     mode: '0600'
+
+- name: Run startup.sh on boot
+  cron:
+    name: "Start Winzig"
+    special_time: reboot
+    job: "/bin/bash /home/winzig/startup.sh"

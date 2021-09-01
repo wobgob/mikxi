@@ -1,12 +1,12 @@
 [worldserver]
 
 # CONNECTIONS AND DIRECTORIES
-RealmID = {{ realm.id }}
+RealmID = {{ realmlist.id }}
 LogsDir = "../log"
-LoginDatabaseInfo = "127.0.0.1;3306;acore;{{ database.pass }};acore_auth"
-WorldDatabaseInfo = "127.0.0.1;3306;acore;{{ database.pass }};{{ realm.world_db }}"
-CharacterDatabaseInfo = "127.0.0.1;3306;acore;{{ database.pass }};{{ realm.char_db }}"
-WorldServerPort = {{ realm.port }}
+LoginDatabaseInfo = "{{ mysql.host }};{{ mysql.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.auth }}"
+WorldDatabaseInfo = "{{ mysql.host }};{{ mysql.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.world }}"
+CharacterDatabaseInfo = "{{ mysql.host }};{{ mysql.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.characters }}"
+WorldServerPort = {{ realmlist.port }}
 
 # SERVER SETTINGS
 MaxPlayerLevel = 19
@@ -35,3 +35,6 @@ Visibility.Distance.Continents = 120
 
 # BATTLEGROUND CONFIG
 Battleground.QueueAnnouncer.Enable = 0
+
+# UPDATE SETTINGS
+Updates.EnableDatabases = 0
