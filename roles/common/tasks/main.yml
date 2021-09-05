@@ -214,6 +214,13 @@
     dest: /home/bup/swaks
     mode: a+x
 
+- name: Add daily cron job to backup the database and logs
+  cron:
+    name: Daily backup
+    hour: 0
+    minute: 0
+    job: "/usr/bin/python3 /home/{{ inventory_hostname }}/backup/bak.py"
+
 - name: Add weekly cron job to backup the entire server
   cron:
     name: Weekly backup
