@@ -1,0 +1,20 @@
+RESTIC_PASSWORD={{ backup.pass }}
+OUTPUT=''
+
+{% for host in groups['backup'] %}
+DUMP=$(/home/bup/restic --exclude={/dev,/media,/mnt,/proc,/run,/sys,/tmp,/var/tmp} -r sftp:bup@{{ hostvars[host].ansible_host }}:repo backup /)
+OUTPUT+="${DUMP}\n\n"
+{% endfor %}
+
+/home/bup/swaks \
+    --auth \
+    --server {{ smtp.host }} \
+    --au {{ smtp.user }} \
+    --ap {{ smtp.pass }} \
+    --from {{ backup.from }} \
+{% for email in backup.to %}
+    --to {{ email }} \
+{% endfor %}
+    --h-From '"{{ company }}" <{{ backup.from }}>' \
+    --h-Subject Backup of {{ inventory_hostname }} complete \
+    --body ${OUTPUT}

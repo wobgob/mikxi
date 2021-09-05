@@ -1,6 +1,10 @@
 # Mikxi
 Head management of the Wobbling Goblin, with a penchant for gold.
 
+## Requirements
+* Telegram account
+* SMTP relay
+
 ## Prepare
 *The following is only required when setting up the server.*
 
@@ -27,7 +31,7 @@ chmod 700 /home/deploy/.ssh
 vi /home/deploy/.ssh/authorized_keys
 chmod 400 /home/deploy/.ssh/authorized_keys
 chown deploy:deploy /home/deploy -R
-echo 'deploy ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/deploy'
+echo 'deploy ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/deploy
 ```
 
 ### On your local machine
@@ -90,12 +94,24 @@ group_vars/all.yml:
       pass: <password>
       host: <host>
       port: <port>
-      uri: mysql://<user>:<password>@<host>:<port>
 
     database:
       auth: <auth>
       characters: <characters>
       world: <world>
+      backup:
+        repo: <repo>
+        version: <version>
+        zip_pass: <password>
+        telegram_api_id: <id>
+        telegram_api_hash: <hash>
+        telegram_chat_id: me
+
+    backup:
+      pass: <password>
+      from: <email>
+      to:
+        - <email>
 
     discord:
       bot_token: <token>
@@ -110,7 +126,13 @@ group_vars/all.yml:
 
 You can overwrite variables on a host-by-host basis in `host_vars/<host>.yml` (e.g., `host_vars/dev.yml`).
 
-Run the `common` role:
+Run the `backup` role:
+
+```
+ansible-playbook --tags backup --limit <host> site.yml
+```
+
+And then the `common` role:
 
 ```
 ansible-playbook --tags common --limit <host> site.yml
@@ -123,13 +145,13 @@ On your local machine:
 
 ```
 ansible-galaxy collection install community.mysql
-ansible-playbook --tags "acore,install,winzig" --limit <host> site.yml
+ansible-playbook --tags "acore,winzig" --limit <host> site.yml
 ```
 
 On the remote server:
 
 ```
-~/azerothcore-wotlk/acore.sh compiler all
+/home/<host>/azerothcore-wotlk/acore.sh compiler all
 ```
 
 You should now find `/home/<host>/startup.sh` and `/home/winzig/startup.sh` which run on boot.
@@ -138,7 +160,7 @@ You should now find `/home/<host>/startup.sh` and `/home/winzig/startup.sh` whic
 On your local machine:
 
 ```
-ansible-playbook --tags "acore,update,winzig" site.yml
+ansible-playbook --tags "acore,winzig" site.yml
 ```
 
 On the remote server:

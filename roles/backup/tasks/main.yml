@@ -1,0 +1,61 @@
+---
+
+- name: Automatically install security updates
+  debconf: name=unattended-upgrades question=unattended-upgrades/enable_auto_updates vtype=boolean value='true'
+
+- name: Install unattended-upgrades
+  apt: name=unattended-upgrades
+
+- name: Enable unattended-upgrades
+  command:
+    cmd: dpkg-reconfigure -f noninteractive unattended-upgrades
+    creates: /etc/apt/apt.conf.d/20auto-upgrades
+
+- name: Install ufw
+  apt: pkg=ufw state=present
+
+- name: Deny everything
+  ufw: policy=deny
+
+- name: Set firewall rule for DNS
+  ufw: rule=allow port=domain
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Set firewall rules for web traffic and SSH
+  ufw: rule=allow port={{ item }} proto=tcp
+  with_items:
+    - http
+    - https
+    - ssh
+
+- name: Enable UFW
+  ufw: state=enabled
+
+- name: Create backup user
+  user:
+    name: bup
+    shell: /bin/bash
+    state: present
+
+- name: Set authorized key for backup user copying it from the current user
+  authorized_key:
+    user: bup
+    state: present
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+
+- name: Install restic
+  apt:
+    name:
+      - restic
+    update_cache: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Add weekly cron job to delete all snapshots older than 6 months
+  cron:
+    name: Weekly pruning
+    weekday: 2
+    hour: 0
+    minute: 0
+    job: /usr/bin/restic -r /home/bup/repo forget --keep-within 0y6m0d0h --prune

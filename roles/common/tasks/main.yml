@@ -39,31 +39,33 @@
 - name: Enable UFW
   ufw: state=enabled
 
-- name: Create user for AzerothCore
+- name: Create default user
   user:
     name: "{{ inventory_hostname }}"
     shell: /bin/bash
     system: yes
     state: present
 
-- name: Set authorized key for user for AzerothCore copying it from the current user
+- name: Set authorized key for default user copying it from the current user
   authorized_key:
     user: "{{ inventory_hostname }}"
     state: present
     key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
 
-- name: Create user winzig
+- name: Create winzig user
   user:
     name: winzig
     shell: /bin/bash
     system: yes
     state: present
+  when: "'winzig' in group_names"
 
-- name: Set authorized key for user winzig copying it from the current user
+- name: Set authorized key for winzig copying it from the current user
   authorized_key:
     user: winzig
     state: present
     key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+  when: "'winzig' in group_names"
 
 - name: Install AzerothCore dependencies
   apt:
@@ -89,22 +91,34 @@
 - name: Add Node.js to repositories
   shell: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 
-- name: Install Node.js, Python, and tmux
+- name: Install Node.js
   apt:
     name:
       - nodejs
-      - python3
-      - python3-pip
-      - tmux
   environment:
     DEBIAN_FRONTEND: noninteractive
 
-- name: Install pyrogram, tgcrypto, and pymysql
+- name: Install backup dependencies
+  apt:
+    name:
+      - python3
+      - python3-pip
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Install python dependencies
   pip:
     name:
       - pyrogram
       - tgcrypto
       - pymysql
+
+- name: Install tmux
+  apt:
+    name:
+      - tmux
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Copy tmux config
   copy:
@@ -125,7 +139,7 @@
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
-- name: Create user
+- name: Create database user
   mysql_user:
     name: "{{ mysql.user }}"
     password: "{{ mysql.pass }}"
@@ -136,3 +150,74 @@
   with_items:
     - localhost
     - 127.0.0.1
+
+- name: Install perl for swaks and bzip2 for restic
+  apt:
+    name:
+      - perl
+      - bzip2
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Create backup user
+  user:
+    name: bup
+    shell: /bin/bash
+    create_home: yes
+    generate_ssh_key: yes
+    state: present
+  register: bup
+
+- name: Register public SSH key
+  set_fact:
+    pubkey: "{{ bup.ssh_public_key }}"
+
+- name: Set authorized key for backup user copying it from the current user
+  authorized_key:
+    user: bup
+    state: present
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+
+- name: Copy scripts
+  template:
+    src: backup.sh.j2
+    dest: "/home/bup/backup.sh"
+    owner: bup
+    group: bup
+    mode: '0600'
+
+- name: Get restic
+  get_url:
+    url: https://github.com/restic/restic/releases/download/v0.12.1/restic_0.12.1_linux_amd64.bz2
+    dest: /home/bup
+  register: restic
+
+- name: Unarchive restic
+  shell: bunzip2 {{ restic.dest }} && mv {{ restic.dest | splitext | first }} /home/bup/restic
+
+- name: Change permissions for restic
+  file:
+    path: /home/bup/restic
+    owner: bup
+    group: bup
+    mode: '0750'
+
+- name: Change capabilities for restic
+  capabilities:
+    path: /home/bup/restic
+    capability: cap_dac_read_search=+ep
+    state: present
+
+- name: Download swaks
+  get_url:
+    url: http://www.jetmore.org/john/code/swaks/files/swaks-20201014.0/swaks
+    dest: /home/bup/swaks
+    mode: a+x
+
+- name: Add weekly cron job to backup the entire server
+  cron:
+    name: Weekly backup
+    weekday: 1
+    hour: 0
+    minute: 0
+    job: "/usr/bin/bash /home/{{ inventory_hostname }}/backup.sh"

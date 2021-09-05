@@ -1,0 +1,26 @@
+{
+    "mysql": {
+        "user": "{{ mysql.user }}",
+        "pass": "{{ mysql.pass }}",
+        "host": "{{ mysql.host }}",
+        "port": {{ mysql.port }}
+    },
+    "database": {
+        "auth": "{{ database.auth }}",
+        "characters": "{{ database.characters }}",
+        "world": "{{ database.world }}"
+    },
+    "zip": {
+        "name": "{{ inventory_hostname }}-{:%Y%m%d%H%M}.zip",
+        "pass": "{{ database.backup.zip_pass }}"
+    },
+    "telegram": {
+        "user": "{{ database.backup.telegram_username }}",
+        "api_id": {{ database.backup.telegram_api_id }},
+        "api_hash": "{{ database.backup.telegram_api_hash }}",
+        "chat_id": "{{ database.backup.telegram_chat_id }}"
+    },
+    "log": {
+        "path": "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/log"
+    }
+}

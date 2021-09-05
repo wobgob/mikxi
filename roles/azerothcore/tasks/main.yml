@@ -14,14 +14,14 @@
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
 
-- name: Create server log folder
+- name: Create log folder
   file:
     path: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/log"
     state: directory
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
 
-- name: Copy startup scripts
+- name: Copy scripts
   template:
     src: "{{ item }}.j2"
     dest: "/home/{{ inventory_hostname }}/{{ item }}"
@@ -102,3 +102,17 @@
     src: "/home/{{ inventory_hostname }}/data.zip"
     dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin"
     remote_src: yes
+
+- name: Checkout backup source
+  git:
+    repo: "{{ database.backup.repo }}"
+    dest: "/home/{{ inventory_hostname }}/backup"
+    version: "{{ database.backup.version }}"
+
+- name: Copy backup configuration
+  template:
+    src: config.json.j2
+    dest: "/home/{{ inventory_hostname }}/backup/config.json"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
+    mode: '0640'

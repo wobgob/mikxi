@@ -1,6 +1,36 @@
 ---
 
-- name: Common
+- name: Backup
+  hosts: backup
+  user: deploy
+  become: yes
+  roles:
+    - backup
+  tags: ['backup']
+
+- name: Backup repository
+  hosts: backup
+  user: bup
+  tasks:
+    - name: Check if backup repository is already initialised
+      shell: restic -r repo snapshots
+      args:
+        chdir: /home/bup
+      environment:
+        RESTIC_PASSWORD: "{{ backup.pass }}"
+      register: restic
+      failed_when: restic.rc not in [0, 1]
+
+    - name: Initialise backup repository
+      command: restic -r repo init
+      args:
+        chdir: /home/bup
+      environment:
+        RESTIC_PASSWORD: "{{ backup.pass }}"
+      when: 'restic.rc == 1'
+  tags: ['backup']
+
+- name: Common configuration
   hosts: common
   user: deploy
   become: yes
@@ -8,13 +38,25 @@
     - common
   tags: ['common']
 
-- name: AzerothCore
+- name: Authorise backups
+  hosts: backup
+  user: deploy
+  become: yes
+  tasks:
+    - name: Authorise public keys on backup servers
+      authorized_key:
+        user: bup
+        key: "{{ hostvars[item]['pubkey'] }}"
+      with_items: "{{ groups['common'] | select('in', ansible_limit) }}"
+  tags: ['common']
+
+- name: AzerothCore configuration
   hosts: acore
   user: "{{ inventory_hostname }}"
   roles: ['azerothcore']
   tags: ['acore']
 
-- name: Winzig
+- name: Winzig configuration
   hosts: winzig
   user: winzig
   roles: ['winzig']

@@ -5,7 +5,7 @@ export default
     "DISCORD_BOT_TOKEN": "{{ discord.bot_token }}",
     "DISCORD_CLIENT_ID": "{{ discord.client_id }}",
     "DISCORD_GUILD_ID": "{{ discord.guild_id }}",
-    "DISCORD_BOT_DB": "{{ mysql.uri }}",
+    "DISCORD_BOT_DB": "{{ mysql.user }}:{{ mysql.pass }}@{{ mysql.host }}:{{ mysql.port }}",
     "SMTP_HOST": "{{ smtp.host }}",
     "SMTP_USER": "{{ smtp.user }}",
     "SMTP_PASS": "{{ smtp.pass }}",
