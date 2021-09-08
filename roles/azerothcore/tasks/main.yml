@@ -62,27 +62,6 @@
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
 
-- name: Import all
-  shell: "bash /home/{{ inventory_hostname }}/azerothcore-wotlk/apps/db_assembler/db_assembler.sh import-all"
-  environment:
-    MYSQL_USER: "{{ mysql.user }}"
-    MYSQL_PASS: "{{ mysql.pass }}"
-    MYSQL_HOST: "{{ mysql.host }}"
-    MYSQL_PORT: "{{ mysql.port }}"
-    DB_AUTH_NAME: "{{ database.auth }}"
-    DB_CHARACTERS_NAME: "{{ database.characters }}"
-    DB_WORLD_NAME: "{{ database.world }}"
-
-- name: Add to realmlist
-  community.mysql.mysql_query:
-    login_user: "{{ mysql.user }}"
-    login_password: "{{ mysql.pass }}"
-    login_db: "{{ database.auth }}"
-    query: >-
-      INSERT INTO realmlist (id, name, address, port) VALUES ({{ realmlist.id }}, '{{ realmlist.name }}', '{{ realmlist.address }}', {{ realmlist.port }})
-      ON DUPLICATE KEY UPDATE name = '{{ realmlist.name }}', address = '{{ realmlist.address }}', port = {{ realmlist.port }}
-    login_unix_socket: /var/run/mysqld/mysqld.sock
-
 - name: Create binary directory
   file:
     path: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin"
@@ -102,17 +81,3 @@
     src: "/home/{{ inventory_hostname }}/data.zip"
     dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin"
     remote_src: yes
-
-- name: Checkout backup source
-  git:
-    repo: "{{ database.backup.repo }}"
-    dest: "/home/{{ inventory_hostname }}/backup"
-    version: "{{ database.backup.version }}"
-
-- name: Copy backup configuration
-  template:
-    src: config.json.j2
-    dest: "/home/{{ inventory_hostname }}/backup/config.json"
-    owner: "{{ inventory_hostname }}"
-    group: "{{ inventory_hostname }}"
-    mode: '0640'

@@ -152,9 +152,10 @@ On the remote server:
 
 ```
 /home/<host>/azerothcore-wotlk/acore.sh compiler all
+/home/<host>/azerothcore-wotlk/acore.sh db-assembler import-all
 ```
 
-You should now find `/home/<host>/startup.sh` and `/home/winzig/startup.sh` which run on boot.
+Then update your `realmlist` in `acore_auth.realmlist`. You should now find `/home/<host>/startup.sh` and `/home/winzig/startup.sh` which run on boot.
 
 ## Updating
 On your local machine:
@@ -167,4 +168,5 @@ On the remote server:
 
 ```
 /home/<host>/azerothcore-wotlk/acore.sh compiler build
+/home/<host>/azerothcore-wotlk/acore.sh db-assembler import-updates
 ```
