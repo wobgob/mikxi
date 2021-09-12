@@ -73,3 +73,11 @@
   become: yes
   roles: ['cdn']
   tags: ['cdn']
+
+- name: Storage configuration
+  hosts: cdn
+  user: cdn
+  tasks:
+    - name: Add a cloud storage service
+      command: "mcli alias set local http://localhost:9000 {{ cdn.user }} {{ cdn.pass }}"
+  tags: ['cdn']

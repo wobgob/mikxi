@@ -24,21 +24,17 @@ http:
       service: cdn
       tls:
         certResolver: myresolver
-        domains:
-          - main: "{{ cdn.server_url }}"
     console:
       rule: "Host(`{{ cdn.console_url }}`)"
       service: console
       tls:
         certResolver: myresolver
-        domains:
-          - main: "{{ cdn.console_url }}"
   services:
     cdn:
       loadBalancer:
         servers:
-          - url: https://{{ cdn.server_url }}:9000
+          - url: http://localhost:9000
     console:
       loadBalancer:
         servers:
-          - url: https://{{ cdn.console_url }}:9001
+          - url: http://localhost:9001
