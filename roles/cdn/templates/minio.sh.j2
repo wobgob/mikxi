@@ -1,0 +1,2 @@
+MINIO_ROOT_USER={{ cdn.user }} MINIO_ROOT_PASSWORD={{ cdn.pass }} MINIO_BROWSER_REDIRECT_URL="https://{{ cdn.console_url }}" MINIO_SERVER_URL="https://{{ cdn.server_url }}" \
+    minio server /mnt/disk1/data --console-address ":9001"

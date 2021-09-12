@@ -1,4 +1,4 @@
-minio="/bin/bash /home/minio/minio.sh"
+minio="/bin/bash /home/cdn/minio.sh"
 minio_session="minio-session"
 
 if tmux new-session -d -s $minio_session; then

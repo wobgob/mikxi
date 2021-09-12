@@ -1,0 +1,44 @@
+providers:
+  file:
+    filename: /home/cdn/traefik.yml
+    watch: true
+
+entryPoints:
+  cdn:
+    address: ":80"
+  cdnsecure:
+    address: ":443"
+
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: {{ cdn.email }}
+      storage: acme.json
+      httpChallenge:
+        entryPoint: cdn
+
+http:
+  routers:
+    cdn:
+      rule: "Host(`{{ cdn.server_url }}`)"
+      service: cdn
+      tls:
+        certResolver: myresolver
+        domains:
+          - main: "{{ cdn.server_url }}"
+    console:
+      rule: "Host(`{{ cdn.console_url }}`)"
+      service: console
+      tls:
+        certResolver: myresolver
+        domains:
+          - main: "{{ cdn.console_url }}"
+  services:
+    cdn:
+      loadBalancer:
+        servers:
+          - url: https://{{ cdn.server_url }}:9000
+    console:
+      loadBalancer:
+        servers:
+          - url: https://{{ cdn.console_url }}:9001

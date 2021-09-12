@@ -129,7 +129,7 @@ You can overwrite variables on a host-by-host basis in `host_vars/<host>.yml` (e
 Install the Ansible plugins:
 
 ```
-ansible-galaxy collection install community.general community.mysql
+ansible-galaxy collection install community.general community.mysql amazon.aws
 ```
 
 Run the `backup` role:

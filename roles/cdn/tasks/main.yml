@@ -1,0 +1,105 @@
+---
+
+- name: Set firewall rules for MinIO
+  ufw:
+    rule: allow
+    from_port: 9000
+    to_port: 9010
+    proto: tcp
+
+- name: Create cdn user
+  user:
+    name: cdn
+    shell: /bin/bash
+    state: present
+
+- name: Set authorized key for cdn user copying it from the current user
+  authorized_key:
+    user: cdn
+    state: present
+    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+
+- name: Get MinIO client
+  get_url:
+    url: "https://dl.min.io/client/mc/release/linux-amd64/{{ cdn.client }}.deb"
+    owner: cdn
+    group: cdn
+    dest: /home/cdn/mcli.deb
+
+- name: Install MinIO client
+  apt:
+    deb: /home/cdn/mcli.deb
+
+- name: Create disk
+  file:
+    path: /mnt/disk1/data
+    state: directory
+    owner: cdn
+    group: cdn
+    mode: '0750'
+
+- name: Get MinIO server
+  get_url:
+    url: "https://dl.min.io/server/minio/release/linux-amd64/{{ cdn.server }}.deb"
+    dest: /home/cdn/minio.deb
+    owner: cdn
+    group: cdn
+
+- name: Install MinIO
+  apt:
+    deb: /home/cdn/minio.deb
+
+- name: Copy minio.sh
+  template:
+    src: minio.sh.j2
+    dest: /home/cdn/minio.sh
+    owner: cdn
+    group: cdn
+    mode: '0640'
+
+- name: Copy startup.sh
+  copy:
+    src: startup.sh
+    dest: /home/cdn/startup.sh
+    owner: cdn
+    group: cdn
+
+- name: Start MinIO on boot
+  cron:
+    name: "Start MinIO"
+    special_time: reboot
+    job: "/bin/bash /home/cdn/startup.sh"
+
+- name: Get Traefik
+  unarchive:
+    src: "{{ cdn.proxy }}"
+    dest: /home/cdn
+    owner: cdn
+    group: cdn
+    remote_src: yes
+
+- name: Set capabilities of Traefik
+  community.general.capabilities:
+    path: /home/cdn/traefik
+    capability: cap_net_bind_service=+ep 
+    state: present
+
+- name: Copy traefik.yml
+  template:
+    src: traefik.yml.j2
+    dest: /home/cdn/traefik.yml
+    owner: cdn
+    group: cdn
+
+- name: Copy traefik.sh
+  copy:
+    src: traefik.sh
+    dest: /home/cdn/traefik.sh
+    owner: cdn
+    group: cdn
+
+- name: Start Traefik on boot
+  cron:
+    name: "Start Traefik"
+    special_time: reboot
+    job: "/bin/bash /home/cdn/traefik.sh"

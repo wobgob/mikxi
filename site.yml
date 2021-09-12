@@ -53,14 +53,7 @@
         user: bup
         key: "{{ hostvars[item]['pubkey'] }}"
       with_items: "{{ groups['common'] | select('in', ansible_limit) }}"
-  tags: ['common']
-
-- name: Proxy configuration
-  hosts: proxy
-  user: deploy
-  become: yes
-  roles: ['proxy']
-  tags: ['proxy']
+  tags: ['app']
 
 - name: AzerothCore configuration
   hosts: acore
@@ -74,25 +67,9 @@
   roles: ['winzig']
   tags: ['winzig']
 
-- name: MinIO configuration
-  hosts: web
+- name: CDN configuration
+  hosts: cdn
   user: deploy
   become: yes
-  roles: ['minio']
-  tags: ['minio']
-
-- name: Start minio
-  hosts: web
-  user: web
-  tasks:
-    - name: Start minio
-      command: "/bin/bash /home/minio/startup.sh"
-  tags: ['start-minio']
-
-- name: Kill minio
-  hosts: web
-  user: web
-  tasks:
-    - name: Kill minio
-      command: tmux kill-server
-  tags: ['kill-minio']
+  roles: ['cdn']
+  tags: ['cdn']
