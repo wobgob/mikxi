@@ -126,6 +126,12 @@ group_vars/all.yml:
 
 You can overwrite variables on a host-by-host basis in `host_vars/<host>.yml` (e.g., `host_vars/dev.yml`).
 
+Install the Ansible plugins:
+
+```
+ansible-galaxy collection install community.general community.mysql
+```
+
 Run the `backup` role:
 
 ```
@@ -144,7 +150,6 @@ ansible-playbook --tags common --limit <host> site.yml
 On your local machine:
 
 ```
-ansible-galaxy collection install community.mysql
 ansible-playbook --tags "acore,winzig" --limit <host> site.yml
 ```
 

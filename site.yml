@@ -1,11 +1,17 @@
 ---
 
-- name: Backup
+- name: Common configuration
+  hosts: all
+  user: deploy
+  become: yes
+  roles: ['common']
+  tags: ['common']
+
+- name: Backup configuration
   hosts: backup
   user: deploy
   become: yes
-  roles:
-    - backup
+  roles: ['backup']
   tags: ['backup']
 
 - name: Backup repository
@@ -30,13 +36,12 @@
       when: 'restic.rc == 1'
   tags: ['backup']
 
-- name: Common configuration
-  hosts: common
+- name: Application configuration
+  hosts: app
   user: deploy
   become: yes
-  roles:
-    - common
-  tags: ['common']
+  roles: ['app']
+  tags: ['app']
 
 - name: Authorise backups
   hosts: backup
@@ -50,6 +55,13 @@
       with_items: "{{ groups['common'] | select('in', ansible_limit) }}"
   tags: ['common']
 
+- name: Proxy configuration
+  hosts: proxy
+  user: deploy
+  become: yes
+  roles: ['proxy']
+  tags: ['proxy']
+
 - name: AzerothCore configuration
   hosts: acore
   user: "{{ inventory_hostname }}"
@@ -61,3 +73,26 @@
   user: winzig
   roles: ['winzig']
   tags: ['winzig']
+
+- name: MinIO configuration
+  hosts: web
+  user: deploy
+  become: yes
+  roles: ['minio']
+  tags: ['minio']
+
+- name: Start minio
+  hosts: web
+  user: web
+  tasks:
+    - name: Start minio
+      command: "/bin/bash /home/minio/startup.sh"
+  tags: ['start-minio']
+
+- name: Kill minio
+  hosts: web
+  user: web
+  tasks:
+    - name: Kill minio
+      command: tmux kill-server
+  tags: ['kill-minio']

@@ -1,0 +1,14 @@
+upstream backend {
+{% for backend in proxy.backend %}
+    server {{ backend.ip }}:{{ proxy.port }};
+{% endfor %}
+}
+
+server {
+    listen {{ proxy.port }};
+    listen [::]:{{ proxy.port }};
+
+    location / {
+        proxy_pass http://backend;
+    }
+}
