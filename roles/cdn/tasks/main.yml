@@ -70,6 +70,9 @@
     special_time: reboot
     job: "/bin/bash /home/cdn/startup.sh"
 
+- name: Start MinIO
+  command: /bin/bash /home/cdn/startup.sh
+
 - name: Get Traefik
   unarchive:
     src: "{{ cdn.proxy }}"
@@ -103,3 +106,45 @@
     name: "Start Traefik"
     special_time: reboot
     job: "/bin/bash /home/cdn/traefik.sh"
+
+- name: Install pip
+  apt:
+    name:
+      - python3-pip
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Install python dependencies
+  pip:
+    name:
+      - requests
+
+- name: Clone sidekick
+  git:
+    repo: "{{ cdn.sidekick.repo }}"
+    dest: /home/cdn/sidekick
+    version: "{{ cdn.sidekick.version }}"
+
+- name: Change sidekick permissions
+  file:
+    path: /home/cdn/sidekick
+    owner: cdn
+    group: cdn
+    state: directory
+    recurse: yes
+
+- name: Copy sidekick configuration
+  template:
+    src: config.json.j2
+    dest: /home/cdn/sidekick/config.json
+    owner: cdn
+    group: cdn
+    mode: '0640'
+
+- name: Run sidekick every minute
+  cron:
+    name: "Run sidekick"
+    job: "/usr/bin/python3 /home/cdn/sidekick/sidekick.py"
+
+- name: Add a cloud storage service for root
+  command: "mcli alias set local http://localhost:9000 {{ cdn.user }} {{ cdn.pass }}"

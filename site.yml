@@ -78,6 +78,6 @@
   hosts: cdn
   user: cdn
   tasks:
-    - name: Add a cloud storage service
+    - name: Add a cloud storage service for cdn
       command: "mcli alias set local http://localhost:9000 {{ cdn.user }} {{ cdn.pass }}"
   tags: ['cdn']

@@ -14,12 +14,22 @@
     system: yes
     state: present
 
-- name: Set authorized key for default user copying it from the current user
+- name: Set staff access for default user
   authorized_key:
     user: "{{ inventory_hostname }}"
     state: present
     key: "{{ item }}"
-  with_items: "{{ pubkeys }}"
+  with_items: "{{ pubkeys.staff }}"
+
+- name: Set github access for default user
+  authorized_key:
+    user: "{{ inventory_hostname }}"
+    state: present
+    key: "{{ pubkeys.github }}"
+
+- name: update apt list
+  apt:
+    update_cache: yes
 
 - name: Install AzerothCore dependencies
   apt:
@@ -45,10 +55,11 @@
 - name: Add Node.js to repositories
   shell: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
 
-- name: Install Node.js
+- name: Install Node.js and pip
   apt:
     name:
       - nodejs
+      - python3-pip
   environment:
     DEBIAN_FRONTEND: noninteractive
 
