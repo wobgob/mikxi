@@ -175,3 +175,23 @@ On the remote server:
 /home/<host>/azerothcore-wotlk/acore.sh compiler build
 /home/<host>/azerothcore-wotlk/acore.sh db-assembler import-updates
 ```
+
+## Git
+On your local machine:
+
+```
+ansible-playbook --tags cdn site.yml
+```
+
+On the remote server:
+
+```
+su - git
+$HOME/bin/gitolite setup -pk /tmp/ron.pub
+```
+
+On your local machine:
+
+```
+git ls-remote git@server:gitolite-admin
+```

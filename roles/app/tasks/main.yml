@@ -18,7 +18,7 @@
   authorized_key:
     user: "{{ inventory_hostname }}"
     state: present
-    key: "{{ item }}"
+    key: "{{ item.key }}"
   with_items: "{{ pubkeys.staff }}"
 
 - name: Set github access for default user
@@ -27,7 +27,7 @@
     state: present
     key: "{{ pubkeys.github }}"
 
-- name: update apt list
+- name: Update apt list
   apt:
     update_cache: yes
 

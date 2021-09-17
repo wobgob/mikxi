@@ -148,3 +148,51 @@
 
 - name: Add a cloud storage service for root
   command: "mcli alias set local http://localhost:9000 {{ cdn.user }} {{ cdn.pass }}"
+
+- name: Create git user
+  user:
+    name: git
+    shell: /bin/bash
+    state: present
+
+- name: Copy public SSH keys
+  copy:
+    dest: "/tmp/{{ item.name }}.pub"
+    content: "{{ item.key }}"
+    owner: git
+    group: git
+    mode: '0644'
+  with_items: "{{ pubkeys.staff }}"
+
+- name: Clone gitolite
+  git:
+    repo: https://github.com/sitaramc/gitolite
+    dest: /home/git/gitolite
+
+- name: Install gitolite
+  shell: |
+    mkdir -p /home/git/bin
+    /home/git/gitolite/install -to /home/git/bin
+  args:
+    chdir: /home/git
+
+- name: Change ownership to git
+  file:
+    dest: /home/git
+    owner: git
+    group: git
+    recurse: yes
+
+- name: Copy git-daemon service
+  copy:
+    src: git-daemon.service
+    dest: /etc/systemd/system/git-daemon.service
+
+- name: Enable git-daemon service
+  systemd:
+    state: started
+    name: git-daemon
+    enabled: yes
+
+- name: Set firewall rules for git-daemon
+  ufw: rule=allow port=9418
