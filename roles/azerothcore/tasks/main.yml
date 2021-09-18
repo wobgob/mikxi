@@ -48,13 +48,6 @@
     - worldserver.conf
     - authserver.conf
 
-- name: Checkout AzerothCore modules
-  git:
-    repo: "{{ item.git }}"
-    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/modules/{{ item.name }}"
-    version: "{{ item.version }}"
-  with_items: "{{ acore.modules }}"
-
 - name: Copy module configuration
   copy:
     src: modules
@@ -77,7 +70,25 @@
     group: "{{ inventory_hostname }}"
 
 - name: Extract client data
-  unarchive:
-    src: "/home/{{ inventory_hostname }}/data.zip"
-    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin"
-    remote_src: yes
+  command: unzip -d "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin" -n "/home/{{ inventory_hostname }}/data.zip"
+
+- name: Checkout acore-console source
+  git:
+    repo: "{{ acore.console.git }}"
+    dest: "/home/{{ inventory_hostname }}/acore-console"
+    version: "{{ acore.console.version }}"
+
+- name: Copy acore-console config
+  template:
+    src: config.js.j2
+    dest: "/home/{{ inventory_hostname }}/acore-console/config.js"
+    mode: '0640'
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
+
+- name: Run acore-console at reset
+  cron:
+    name: "Daily Macaroons"
+    minute: "0"
+    hour: "0"
+    job: "/usr/bin/node /home/{{ inventory_hostname }}/acore-console/index.js 'daily macaroons'"
