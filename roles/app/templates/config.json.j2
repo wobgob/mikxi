@@ -6,9 +6,9 @@
         "port": {{ mysql.port }}
     },
     "database": {
-        "auth": "{{ database.auth }}",
-        "characters": "{{ database.characters }}",
-        "world": "{{ database.world }}"
+        "auth": "{{ database.auth.name }}",
+        "characters": "{{ database.characters.name }}",
+        "world": "{{ database.world.name }}"
     },
     "zip": {
         "name": "{{ inventory_hostname }}-{:%Y%m%d%H%M}.zip",

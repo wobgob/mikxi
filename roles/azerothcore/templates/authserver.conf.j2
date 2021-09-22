@@ -2,7 +2,7 @@
 
 # AUTH SERVER SETTINGS
 LogsDir = "../log"
-LoginDatabaseInfo = "{{ mysql.host }};{{ mysql.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.auth }}"
+LoginDatabaseInfo = "{{ database.auth.host }};{{ database.auth.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.auth.name }}"
 
 # UPDATE SETTINGS
 Updates.EnableDatabases = 0

@@ -3,12 +3,13 @@
 # CONNECTIONS AND DIRECTORIES
 RealmID = {{ realmlist.id }}
 LogsDir = "../log"
-LoginDatabaseInfo = "{{ mysql.host }};{{ mysql.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.auth }}"
-WorldDatabaseInfo = "{{ mysql.host }};{{ mysql.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.world }}"
-CharacterDatabaseInfo = "{{ mysql.host }};{{ mysql.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.characters }}"
+LoginDatabaseInfo = "{{ database.auth.host }};{{ database.auth.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.auth.name }}"
+WorldDatabaseInfo = "{{ database.world.host }};{{ database.world.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.world.name }}"
+CharacterDatabaseInfo = "{{ database.characters.host }};{{ database.characters.port }};{{ mysql.user }};{{ mysql.pass }};{{ database.characters.name }}"
 WorldServerPort = {{ realmlist.port }}
 
 # SERVER SETTINGS
+RealmZone = {{ realmlist.timezone }}
 MaxPlayerLevel = 19
 MaxPrimaryTradeSkill = 11
 MinPetitionSigns = 1
@@ -38,6 +39,7 @@ Battleground.QueueAnnouncer.Enable = 0
 
 # CONSOLE AND REMOTE ACCESS
 SOAP.Enabled = 1
+SOAP.Port = {{ acore.console.port }}
 
 # CUSTOM SERVER OPTIONS
 Guild.BankTabCost0 = 500000

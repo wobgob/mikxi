@@ -22,6 +22,11 @@
     group: winzig
     mode: '0600'
 
+- name: Install Winzig
+  command: npm ci
+  args:
+    chdir: /home/winzig/winzig
+
 - name: Run startup.sh on boot
   cron:
     name: "Start Winzig"

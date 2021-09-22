@@ -100,9 +100,9 @@
 - name: Create databases
   mysql_db:
     name:
-      - "{{ database.world }}"
-      - "{{ database.characters }}"
-      - "{{ database.auth }}"
+      - "{{ database.world.name }}"
+      - "{{ database.characters.name }}"
+      - "{{ database.auth.name }}"
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
@@ -114,9 +114,7 @@
     priv: '*.*:ALL,GRANT'
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
-  with_items:
-    - localhost
-    - 127.0.0.1
+  with_items: "{{ database.hosts }}"
 
 - name: Install python backup dependencies
   pip:

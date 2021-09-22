@@ -2,7 +2,7 @@
 
 worldserver="/home/{{ inventory_hostname }}/azerothcore-wotlk/acore.sh run-worldserver"
 
-worldserver_session="world-session"
+worldserver_session="worldserver"
 
 if tmux new-session -d -s $worldserver_session; then
     echo "Created worldserver session: $worldserver_session"

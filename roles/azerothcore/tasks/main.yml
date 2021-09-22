@@ -28,7 +28,7 @@
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
   with_items:
-    - startup.sh
+    - authserver.sh
     - worldserver.sh
 
 - name: Create configuration directory
@@ -70,7 +70,23 @@
     group: "{{ inventory_hostname }}"
 
 - name: Extract client data
-  command: unzip -d "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin" -n "/home/{{ inventory_hostname }}/data.zip"
+  unarchive:
+    src: "/home/{{ inventory_hostname }}/data.zip"
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin"
+    owner: "{{ inventory_hostname }}"
+    group: "{{ inventory_hostname }}"
+    remote_src: yes
+
+- name: Delete DBCs
+  file:
+    state: absent
+    path: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin/dbc"
+
+- name: Checkout DBCs
+  git:
+    repo: "{{ acore.dbc.git }}"
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/bin/dbc"
+    version: "{{ acore.dbc.version }}"
 
 - name: Checkout acore-console source
   git:
@@ -85,6 +101,11 @@
     mode: '0640'
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
+
+- name: Install acore-console
+  command: npm ci
+  args:
+    chdir: "/home/{{ inventory_hostname }}/acore-console"
 
 - name: Run acore-console at reset
   cron:

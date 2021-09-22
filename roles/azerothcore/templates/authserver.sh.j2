@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+authserver="/home/{{ inventory_hostname }}/azerothcore-wotlk/acore.sh run-authserver"
+
+authserver_session="authserver"
+
+if tmux new-session -d -s $authserver_session; then
+    echo "Created authserver session: $authserver_session"
+else
+    echo "Error when trying to create authserver session: $authserver_session"
+fi
+
+if tmux send-keys -t $authserver_session "$authserver" C-m; then
+    echo "Executed \"$authserver\" inside $authserver_session"
+    echo "You can attach to $authserver_session and check the result using \"tmux attach -t $authserver_session\""
+else
+    echo "Error when executing \"$authserver\" inside $authserver_session"
+fi

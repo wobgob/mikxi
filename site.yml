@@ -52,7 +52,7 @@
       authorized_key:
         user: bup
         key: "{{ hostvars[item]['pubkey'] }}"
-      with_items: "{{ groups['common'] | select('in', ansible_limit) }}"
+      with_items: "{{ groups['app'] | select('in', ansible_limit | default(groups['app'])) }}"
   tags: ['app']
 
 - name: AzerothCore configuration
