@@ -1,11 +1,11 @@
-winzig="cd /home/winzig/winzig && /usr/bin/node /home/winzig/winzig/index.js"
+winzig="cd /home/winzig/winzig && until /usr/bin/node /home/winzig/winzig/index.js; do sleep 1; done"
 
 winzig_session="winzig"
 
 if tmux new-session -d -s $winzig_session; then
-    echo "Created authserver session: $winzig_session"
+    echo "Created winzig session: $winzig_session"
 else
-    echo "Error when trying to create authserver session: $winzig_session"
+    echo "Error when trying to create winzig session: $winzig_session"
 fi
 
 if tmux send-keys -t $winzig_session "$winzig" C-m; then
