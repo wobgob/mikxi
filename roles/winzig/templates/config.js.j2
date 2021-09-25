@@ -3,12 +3,13 @@ export default
     "COMPANY": "{{ company }}",
     "WEBSITE": "{{ website }}",
     "EMAIL": "{{ email }}",
+    "TEST_REALM_ID": {{ hostvars['test']['realmlist']['id'] }},
     "DISCORD": {
         "BOT_TOKEN": "{{ discord.bot_token }}",
         "CLIENT_ID": "{{ discord.client_id }}",
-        "GUILD_ID": "{{ discord.guild_id }}"
+        "GUILD_ID": "{{ discord.guild_id }}",
+        "LOG_ID": "{{ discord.log_id }}"
     },
-    "TEST_REALM_ID": {{ hostvars['test']['realmlist']['id'] }},
     "DATABASES": {
         "AUTH": "mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ database.auth.host }}:{{ database.auth.port }}/{{ database.auth.name }}",
         "CHARACTERS": "mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ database.characters.host }}:{{ database.characters.port }}/{{ database.characters.name }}",
