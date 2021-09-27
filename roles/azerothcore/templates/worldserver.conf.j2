@@ -43,13 +43,8 @@ Battleground.QueueAnnouncer.Limit.MinPlayers = 1
 SOAP.Enabled = 1
 SOAP.Port = {{ acore.console.port }}
 
-# CUSTOM SERVER OPTIONS
-Guild.BankTabCost0 = 500000
-Guild.BankTabCost1 = 1250000
-Guild.BankTabCost2 = 2500000
-Guild.BankTabCost3 = 5000000
-Guild.BankTabCost4 = 12500000
-Guild.BankTabCost5 = 25000000
-
 # LOGGING SYSTEM SETTINGS
-Logger.loot=4,Console Server
+Appender.Console=1,4,15,"1 9 3 6 5 8"
+Appender.Server=2,5,15,Server.log,w
+Appender.GM=2,5,15,GM.log
+Appender.DBErrors=2,5,15,DBErrors.log
