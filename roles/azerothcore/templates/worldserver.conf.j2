@@ -35,6 +35,10 @@ Rate.Creature.Aggro = 0.8
 # VISIBILITY AND DISTANCES
 Visibility.Distance.Continents = 120
 
+# SERVER RATES
+Rate.Auction.Deposit = 0
+Rate.Auction.Cut = 0
+
 # BATTLEGROUND CONFIG
 Battleground.QueueAnnouncer.Enable = 1
 Battleground.QueueAnnouncer.Limit.MinPlayers = 1
@@ -44,7 +48,7 @@ SOAP.Enabled = 1
 SOAP.Port = {{ acore.console.port }}
 
 # LOGGING SYSTEM SETTINGS
-Appender.Console=1,4,15,"1 9 3 6 5 8"
-Appender.Server=2,5,15,Server.log,w
-Appender.GM=2,5,15,GM.log
-Appender.DBErrors=2,5,15,DBErrors.log
+Appender.Console=1,4,7,"1 9 3 6 5 8"
+Appender.Server=2,5,7,Server.log
+Appender.GM=2,5,7,GM.log
+Appender.DBErrors=2,5,7,DBErrors.log
