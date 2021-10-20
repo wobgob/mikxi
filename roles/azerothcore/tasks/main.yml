@@ -51,7 +51,7 @@
 - name: Copy module configuration
   copy:
     src: modules
-    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc/modules"
+    dest: "/home/{{ inventory_hostname }}/azerothcore-wotlk/env/dist/etc"
     owner: "{{ inventory_hostname }}"
     group: "{{ inventory_hostname }}"
 
