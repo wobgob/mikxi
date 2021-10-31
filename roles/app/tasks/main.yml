@@ -87,8 +87,9 @@
   authorized_key:
     user: winzig
     state: present
-    key: "{{ lookup('file', lookup('env', 'HOME') + '/.ssh/id_rsa.pub') }}"
+    key: "{{ item.key }}"
   when: "'winzig' in group_names"
+  with_items: "{{ pubkeys.staff }}"
 
 - name: Set firewall rules for Winzig
   ufw: rule=allow port={{ item }} proto=tcp
