@@ -13,6 +13,7 @@ export default
     "DATABASES": {
         "AUTH": "mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ database.auth.host }}:{{ database.auth.port }}/{{ database.auth.name }}",
         "CHARACTERS": "mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ database.characters.host }}:{{ database.characters.port }}/{{ database.characters.name }}",
+        "TEST_CHARACTERS": "mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ database.test_characters.port }}/{{ database.test_characters.name }},
         "WORLD": "mysql://{{ mysql.user }}:{{ mysql.pass }}@{{ database.world.host }}:{{ database.world.port }}/{{ database.world.name }}"
     },
     "ROLES": {
